@@ -4,9 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "db-mockdata"
-urls = ["https://github.com/Experrior/db-mockdata"]
 license = { text = "MIT License" }
-version = "0.1.03"
+version = "0.1.04"
 description = "Simple package for creating mockdata for a live database, according to specified relational schema."
 readme = "README.md"
 authors = [{name = "Mateusz Molenda", email = "devexperrior@gmail.com"}]
@@ -20,4 +19,8 @@ dependencies = [
     "sqlalchemy>=2.0.30",
     "tqdm>=4.66.4"
 ]
+keywords = ["mock", "database"]
 
+[project.urls]
+Repository = "https://github.com/Experrior/db-mockdata.git"
+Issues = "https://github.com/Experrior/db-mockdata/issues"
