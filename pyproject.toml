@@ -8,13 +8,12 @@ version = "0.1"
 description = "Simple package for creating mockdata for a live database, according to specified relational schema."
 authors = [{name = "Mateusz Molenda", email = "devexperrior@gmail.com"},]
 requires-python = ">=3.8"
-
-[project.dependencies]
-faker = ">=25.2.0"
-networkx = ">=3.3"
-psycopg2-binary = ">=2.9.9"
-requests = ">=2.31.0"
-sqlalchemy = ">=2.0.30"
-tqdm = ">=4.66.4"
-
+dependencies = [
+    "faker>=25.2.0",
+    "networkx>=3.3",
+    "psycopg2-binary>=2.9.9",
+    "requests>=2.31.0",
+    "sqlalchemy>=2.0.30",
+    "tqdm>=4.66.4"
+]
 
