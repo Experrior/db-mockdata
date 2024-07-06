@@ -165,7 +165,7 @@ logging.info(f"Seed used: {seed}")
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Script to populate database according to specified schema")
+        description="Script to populate database according to specified schema.")
 
     parser.add_argument('-f', '--file',
                         type=str,

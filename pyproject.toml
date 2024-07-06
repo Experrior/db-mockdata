@@ -4,8 +4,9 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "db-mockdata"
-version = "0.1"
+version = "0.1.01"
 description = "Simple package for creating mockdata for a live database, according to specified relational schema."
+readme = "README.md"
 authors = [{name = "Mateusz Molenda", email = "devexperrior@gmail.com"},]
 requires-python = ">=3.8"
 dependencies = [
