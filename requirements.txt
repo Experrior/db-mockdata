@@ -3,3 +3,4 @@ faker>=25.2.0
 tqdm>=4.66.4
 sqlalchemy>=2.0.30
 psycopg2-binary>=2.9.9
+networkx==3.3
