@@ -4,10 +4,9 @@ import logging
 import random
 import re
 import string
-from itertools import product, islice
-
-import networkx as nx
 from faker import Faker
+from itertools import product, islice
+import networkx as nx
 from sqlalchemy import *
 from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.orm import declarative_base, sessionmaker
