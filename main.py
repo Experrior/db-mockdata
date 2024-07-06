@@ -1,3 +1,4 @@
+import argparse
 import json
 import logging
 import random
@@ -127,7 +128,8 @@ def create_random_model_object(model, fields, existing_objects, self_referential
         elif "float" in field_type:
             field_data[field_name] = const_value if const else random.random() * 1000
         elif "first_name" in field_type:
-            field_data[field_name] = const_value if const else (fake.unique.first_name() if is_unique else fake.first_name())
+            field_data[field_name] = const_value if const else (
+                fake.unique.first_name() if is_unique else fake.first_name())
         elif "last_name" in field_type:
             field_data[field_name] = const_value if const else fake.last_name()
         elif "email" in field_type:
@@ -141,13 +143,14 @@ def create_random_model_object(model, fields, existing_objects, self_referential
         elif "phone" in field_type:
             field_data[field_name] = const_value if const else fake.phone_number()
         elif "long_text" in field_type:
-            field_data[field_name] = const_value if const else (fake.unique.paragraph() if is_unique else fake.paragraph())
+            field_data[field_name] = const_value if const else (
+                fake.unique.paragraph() if is_unique else fake.paragraph())
         elif "OPTION IN" in field_type:
             options = field_type.split('(')[1].strip(')').split(', ')
             field_data[field_name] = fake.random_element(elements=options)
         elif "FK" in field_type:
             foreign_table, foreign_key = field_type.split(' ')[1].split('.')
-            if foreign_table == table_name and not self_referential:
+            if foreign_table == model.__table__.name and not self_referential:
                 field_data[field_name] = None
             else:
                 get_data = getattr(fake.random_element(existing_objects[foreign_table]), foreign_key)
@@ -160,9 +163,20 @@ def create_random_model_object(model, fields, existing_objects, self_referential
 
 logging.info(f"Seed used: {seed}")
 
-if __name__ == "__main__":
-    # load json
-    with open('mock-data.json', 'r') as f:
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Script to populate database according to specified schema")
+
+    parser.add_argument('-f', '--file',
+                        type=str,
+                        help='Configuration file with mock data schema.',
+                        required=False,
+                        default='mock-data.json')
+
+    args = parser.parse_args()
+
+    with open(args.file, 'r') as f:
         json_data = json.load(f)
 
     engine = create_engine(json_data['connection'])
@@ -198,7 +212,6 @@ if __name__ == "__main__":
             fk_table = fk.target_fullname.split('.')[0]
             if fk_table != table_name:
                 tables_dependencies.append((fk_table, table_name))
-
 
     directed_graph = nx.DiGraph()
     directed_graph.add_edges_from(tables_dependencies)
@@ -276,3 +289,7 @@ if __name__ == "__main__":
         print('\n')
 
     session.close()
+
+
+if __name__ == "__main__":
+    main()

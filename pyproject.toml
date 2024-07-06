@@ -9,6 +9,7 @@ description = "Simple package for creating mockdata for a live database, accordi
 authors = [{name = "Mateusz Molenda", email = "devexperrior@gmail.com"},]
 requires-python = ">=3.8"
 dependencies = [
+    "argparse>=1.4.0",
     "faker>=25.2.0",
     "networkx>=3.3",
     "psycopg2-binary>=2.9.9",
