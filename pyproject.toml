@@ -3,7 +3,7 @@ requires = ["setuptools >= 61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "db-mockdata"
+name = "db_mockdata"
 license = { text = "MIT License" }
 version = "0.1.04"
 description = "Simple package for creating mockdata for a live database, according to specified relational schema."
@@ -20,6 +20,9 @@ dependencies = [
     "tqdm>=4.66.4"
 ]
 keywords = ["mock", "database"]
+
+[tool.poetry.scripts]
+my-script = "db-mockdata.db_mockdata:main"
 
 [project.urls]
 Repository = "https://github.com/Experrior/db-mockdata.git"
