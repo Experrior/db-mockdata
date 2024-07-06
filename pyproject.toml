@@ -9,9 +9,7 @@ license = { text = "MIT License" }
 version = "0.1.03"
 description = "Simple package for creating mockdata for a live database, according to specified relational schema."
 readme = "README.md"
-authors = [
-    "Mateusz Molenda <devexperrior@gmail.com>",
-]
+authors = [{name = "Mateusz Molenda", email = "devexperrior@gmail.com"}]
 requires-python = ">=3.8"
 dependencies = [
     "argparse>=1.4.0",
