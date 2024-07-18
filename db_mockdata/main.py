@@ -243,6 +243,8 @@ def main():
                     else:
                         new_objects[table_name].append(new_obj)
                     session.add(new_obj)
+                # get new_objects id's for further self references
+                session.commit()
                 for _ in range(round(objects_counts[table_name] * percentage / 100)):
                     new_obj = create_random_model_object(models[table_name], tables[table_name], new_objects,
                                                          self_referential=True)
