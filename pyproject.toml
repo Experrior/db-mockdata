@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "db_mockdata"
 license = { text = "MIT License" }
-version = "0.1.05"
+version = "0.1.07"
 description = "Simple package for creating mockdata for a live database, according to specified relational schema."
 readme = "README.md"
 authors = [{name = "Mateusz Molenda", email = "devexperrior@gmail.com"}]
