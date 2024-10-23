@@ -12,7 +12,13 @@ from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.orm import declarative_base, sessionmaker
 from tqdm import tqdm
 
-#  --- initialize ORM and random seed ---
+# --- setup logger ---
+
+logger = logging.getLogger('db_mockdata')
+
+# --- setup logger ---
+
+# --- initialize ORM and random seed ---
 Base = declarative_base()
 fake = Faker()
 seed = random.randint(0, 2 * 16)
@@ -160,7 +166,7 @@ def create_random_model_object(model, fields, existing_objects, self_referential
     return model(**field_data)
 
 
-logging.info(f"Seed used: {seed}")
+logger.info(f"Seed used: {seed}")
 
 
 def main():
@@ -172,8 +178,15 @@ def main():
                         help='Configuration file with mock data schema.',
                         required=False,
                         default='mock-data.json')
+    parser.add_argument('-l',
+                        '--loglevel',
+                        default='info',
+                        choices=['debug', 'info', 'warning', 'error', 'critical'],
+                        help='Provide logger level. Example --loglevel debug, default=warning.')
+
 
     args = parser.parse_args()
+    logger.level = args.loglevel
 
     with open(args.file, 'r') as f:
         json_data = json.load(f)
@@ -220,8 +233,8 @@ def main():
         if table not in ordered_tables:
             ordered_tables.append(table)
     for table in ordered_tables[:-1]:
-        print(table, end=' --> ')
-    print(ordered_tables[-1])
+        logger.info(table, end=' --> ')
+    logger.info(ordered_tables[-1])
     # --- order the table creation according to FK constraints ---
 
     new_objects = {}
@@ -280,14 +293,14 @@ def main():
         session.commit()
     # -- processing Intermediary Tables ---
 
-    print("\n\n\t\tEXAMPLE ROW FROM EACH TABLE:")
+    logger.error("\n\n\t\tEXAMPLE ROW FROM EACH TABLE:")
     for column in new_objects.keys():
-        print(column)
+        logger.info(column)
         for i in range(1):
             for field in new_objects[column][i].__table__.columns.keys():
-                print(f"\t{field}: {getattr(new_objects[column][i], field)}")
-            print('\n')
-        print('\n')
+                logger.info(f"\t{field}: {getattr(new_objects[column][i], field)}")
+            logger.info('\n')
+        logger.info('\n')
 
     session.close()
 
