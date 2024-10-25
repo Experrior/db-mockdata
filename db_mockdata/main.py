@@ -37,7 +37,7 @@ def unique_combinations(fields, created_data, limit):
     for field_name, field_type in fields.items():
         if "FK" in field_type:
             foreign_table, foreign_key = field_type.split(' ')[1].split('.')
-            combination_lists.append([x.id for x in created_data[foreign_table]])
+            combination_lists.append([getattr(x, foreign_key) for x in created_data[foreign_table]])
 
     for list in combination_lists:
         random.shuffle(list)
@@ -71,8 +71,8 @@ class EmailGenerator:
 
 
 # --- initialize generators ---
-email_generator = EmailGenerator()
 
+email_generator = EmailGenerator()
 
 # --- initialize generators ---
 
@@ -171,8 +171,6 @@ def create_random_model_object(model, fields, existing_objects, self_referential
     return model(**field_data)
 
 
-
-
 def main():
     parser = argparse.ArgumentParser(
         description="Script to populate database according to specified schema.")
@@ -227,7 +225,7 @@ def main():
     directed_graph.add_edges_from(tables_dependencies)
     # Perform a topological sort to get the order of processing
     ordered_tables = list(nx.topological_sort(directed_graph))
-    for table in special_tables:
+    for table in tables:
         if table not in ordered_tables:
             ordered_tables.append(table)
     print("Order of creation of the tables: ")
