@@ -1,6 +1,5 @@
 import argparse
 import json
-import logging
 import random
 import re
 import string
@@ -14,12 +13,6 @@ from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.orm import declarative_base, sessionmaker
 from tqdm import tqdm
 
-# --- setup logger ---
-
-logger = logging.getLogger('db_mockdata')
-
-# --- setup logger ---
-
 # --- initialize ORM and random seed ---
 
 Base = declarative_base()
@@ -27,6 +20,7 @@ fake = Faker()
 seed = random.randint(0, 2 * 16)
 Faker.seed(seed)
 random.seed(seed)
+print(f"Seed used: {seed}")
 
 # --- initialize ORM and random seed ---
 
@@ -177,7 +171,6 @@ def create_random_model_object(model, fields, existing_objects, self_referential
     return model(**field_data)
 
 
-logger.info(f"Seed used: {seed}")
 
 
 def main():
@@ -189,14 +182,8 @@ def main():
                         help='Configuration file with mock data schema.',
                         required=False,
                         default='mock-data.json')
-    parser.add_argument('-l',
-                        '--loglevel',
-                        default='info',
-                        choices=['debug', 'info', 'warning', 'error', 'critical'],
-                        help='Provide logger level. Example --loglevel debug, default=warning.')
 
     args = parser.parse_args()
-    logger.level = args.loglevel
 
     with open(args.file, 'r') as f:
         json_data = json.load(f)
@@ -211,6 +198,7 @@ def main():
     tables = {}
     models = {}
     special_tables = {}
+    print("Processing order of filling tables...")
     pbar = tqdm([x for x in json_data['tables']])
     for table in pbar:
         table_name = table
@@ -242,9 +230,8 @@ def main():
     for table in special_tables:
         if table not in ordered_tables:
             ordered_tables.append(table)
-    for table in ordered_tables[:-1]:
-        logger.info(table, end=' --> ')
-    logger.info(ordered_tables[-1])
+    print("Order of creation of the tables: ")
+    print("\t" + ' --> '.join(ordered_tables))
     # --- order the table creation according to FK constraints ---
 
     new_objects = {}
@@ -303,14 +290,14 @@ def main():
         session.commit()
     # -- processing Intermediary Tables ---
 
-    logger.info("\n\n\t\tEXAMPLE ROW FROM EACH TABLE:")
+    print("\n\n\t\tEXAMPLE ROW FROM EACH TABLE:")
     for example_column in new_objects.keys():
-        logger.info(example_column)
+        print(example_column)
         for i in range(1):
             for field in new_objects[example_column][i].__table__.columns.keys():
-                logger.info(f"\t{field}: {getattr(new_objects[example_column][i], field)}")
-            logger.info('\n')
-        logger.info('\n')
+                print(f"\t{field}: {getattr(new_objects[example_column][i], field)}")
+            print('\n')
+        print('\n')
 
     session.close()
 
