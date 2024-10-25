@@ -4,6 +4,8 @@ import logging
 import random
 import re
 import string
+import uuid
+
 from faker import Faker
 from itertools import product, islice
 import networkx as nx
@@ -19,12 +21,12 @@ logger = logging.getLogger('db_mockdata')
 # --- setup logger ---
 
 # --- initialize ORM and random seed ---
+
 Base = declarative_base()
 fake = Faker()
 seed = random.randint(0, 2 * 16)
 Faker.seed(seed)
 random.seed(seed)
-
 
 # --- initialize ORM and random seed ---
 
@@ -90,6 +92,8 @@ def create_model(name, fields, intermediary_table):
             field_type = field_type_original.strip('UNIQUE').strip()
         if "PK serial" in field_type:
             attrs[field_name] = Column(Integer, primary_key=True, autoincrement=True)
+        if "PK UUID" in field_type:
+            attrs[field_name] = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
         elif any(x in field_type for x in
                  ["first_name", "last_name", "email", "password", "address", "phone", "long_text", "OPTION IN"]):
             attrs[field_name] = Column(String, unique=is_unique)
@@ -101,10 +105,17 @@ def create_model(name, fields, intermediary_table):
             attrs[field_name] = Column(INTEGER, unique=is_unique)
         elif "float" in field_type:
             attrs[field_name] = Column(FLOAT, unique=is_unique)
+        elif field_type.startswith("FK_UUID"):
+            ref_table, ref_column = field_type.split()[1].split('.')
+
+            attrs[field_name] = Column(UUID, ForeignKey(f"{ref_table}.{ref_column}"),
+                                       primary_key=intermediary_table)
         elif field_type.startswith("FK"):
             ref_table, ref_column = field_type.split()[1].split('.')
+
             attrs[field_name] = Column(Integer, ForeignKey(f"{ref_table}.{ref_column}"),
                                        primary_key=intermediary_table)
+
         else:
             raise ValueError(f"Unknown field type: {field_type}")
 
@@ -124,7 +135,7 @@ def create_random_model_object(model, fields, existing_objects, self_referential
             const = True
             const_value = field_type_original.split('CONST')[-1].strip()
             if const_value == "None": const_value = None
-        if "PK serial" in field_type:
+        if "PK" in field_type:
             continue
         elif "bool" in field_type:
             field_data[field_name] = const_value if const else fake.random_element([True, False])
@@ -183,7 +194,6 @@ def main():
                         default='info',
                         choices=['debug', 'info', 'warning', 'error', 'critical'],
                         help='Provide logger level. Example --loglevel debug, default=warning.')
-
 
     args = parser.parse_args()
     logger.level = args.loglevel
@@ -293,12 +303,12 @@ def main():
         session.commit()
     # -- processing Intermediary Tables ---
 
-    logger.error("\n\n\t\tEXAMPLE ROW FROM EACH TABLE:")
-    for column in new_objects.keys():
-        logger.info(column)
+    logger.info("\n\n\t\tEXAMPLE ROW FROM EACH TABLE:")
+    for example_column in new_objects.keys():
+        logger.info(example_column)
         for i in range(1):
-            for field in new_objects[column][i].__table__.columns.keys():
-                logger.info(f"\t{field}: {getattr(new_objects[column][i], field)}")
+            for field in new_objects[example_column][i].__table__.columns.keys():
+                logger.info(f"\t{field}: {getattr(new_objects[example_column][i], field)}")
             logger.info('\n')
         logger.info('\n')
 
